@@ -21,3 +21,9 @@ here do that through the [Requests](http://docs.python-requests.org/) module
 which should be reserved to **read-only operations**. Since the Web API is slow,
 using direct queries to the local database is the preferred method for read-only
 operations here.
+
+## List of available scripts
+
+  - ``export_with_metadata``: add metadata to a PDF file attached to a Zotero
+    item. This script requires the [PyPDF2](https://pythonhosted.org/PyPDF2/)
+    module.
