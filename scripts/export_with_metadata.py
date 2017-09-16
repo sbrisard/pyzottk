@@ -18,7 +18,8 @@ following error message
 
 The script first tries to find the user's Zotero profile (a file that is
 called prefs.js). In case of failure, it is possible to specify the
-preferences file from the command line (see the --prefs option).
+relevent preferences from the command line (see the --data and --base
+options).
 """
 import glob
 import os.path
@@ -41,6 +42,14 @@ OUTPUT_HELP = ('The path to the cloned PDF (with metadata). If not '
                'current directory, under the name '
                '"input-with_metadata.pdf", where "input.pdf" is the '
                'name of the input file.')
+DATA_HELP = ('Full path to the Zotero database. When this option is '
+             'set, the Zotero preferences files prefs.js is not '
+             'loaded.')
+BASE_HELP = ('The path to the root directory of linked attachments. '
+             'This corresponds to the baseAttachmentPath key in the '
+             'prefs.js Zotero preferences files. This option is ignored '
+             'if --data is not specified. It is required to export '
+             'linked attachments when the --data option is specified.')
 
 ATTACHMENTS_PREFIX = 'attachments:'
 PDF_EXTENSION = '.pdf'
@@ -217,6 +226,8 @@ def setup_argument_parser():
                             formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument('path', help=PATH_HELP)
     parser.add_argument('-o', '--output', help=OUTPUT_HELP)
+    parser.add_argument('--data', help=DATA_HELP)
+    parser.add_argument('--base', help=BASE_HELP)
     return parser
 
 
@@ -251,7 +262,6 @@ def select_zotero_prefs():
     """
     candidates = locate_zotero_prefs()
     if len(candidates) == 0:
-        # TODO Allow for a --prefs command line argument
         return None
     elif len(candidates) > 1:
         prefix = os.path.commonpath(candidates)
@@ -354,13 +364,16 @@ def default_output_name(input_name):
 if __name__ == '__main__':
     args = setup_argument_parser().parse_args()
 
-    path = select_zotero_prefs()
-    if path:
-        prefs = parse_zotero_prefs(select_zotero_prefs())
+    if args.data:
+        database_path = args.data
     else:
-        raise RuntimeError('could not locate Zotero preferences')
+        path = select_zotero_prefs()
+        if path:
+            prefs = parse_zotero_prefs(select_zotero_prefs())
+            database_path = os.path.join(prefs[DATA_DIR_KEY], 'zotero.sqlite')
+        else:
+            raise RuntimeError('could not locate Zotero preferences')
 
-    database_path = os.path.join(prefs[DATA_DIR_KEY], 'zotero.sqlite')
     connection = sqlite_ro_connection(database_path)
     cursor = connection.cursor()
 
@@ -370,7 +383,15 @@ if __name__ == '__main__':
     else:
         raise ValueError('No attachments match the specified pattern!')
 
-    iname = attachment_absolute_path(path, prefs[BASE_ATTACHMENT_PATH_KEY])
+    if path.startswith(ATTACHMENTS_PREFIX):
+        if args.data:
+            if args.base:
+                base_attachment_path = args.base
+            else:
+                raise RuntimeError('Base attachment path must be specified.')
+        else:
+            base_attachment_path = prefs[BASE_ATTACHMENT_PATH_KEY]
+    iname = attachment_absolute_path(path, base_attachment_path)
     oname = args.output or default_output_name(iname)
 
     fieldID = get_field_ID('title', cursor)
