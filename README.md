@@ -27,3 +27,23 @@ operations here.
   - ``export_with_metadata``: add metadata to a PDF file attached to a Zotero
     item. This script requires the [PyPDF2](https://pythonhosted.org/PyPDF2/)
     module.
+  - ``create_missing_attachments`` (sandbox):creates linked attachments to
+    parent items.
+
+## The ``pyzottk.cfg`` config file
+
+Most scripts in the sandbox use a legacy configuration system, through a config file, instead of attempting to retrieve the Zotero preferences automatically. The file must be called ``pyzottk.cfg`` and stored in the current directory.
+
+The ``pyzottk.cfg`` config file must be structured as follows:
+
+    [credentials]
+    key =
+    user_ID =
+
+    [local]
+    data_directory =
+    base_attachment_path =
+
+    [proxies]
+    http =
+    https =
