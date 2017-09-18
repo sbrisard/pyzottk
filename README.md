@@ -27,8 +27,10 @@ operations here.
   - ``export_with_metadata``: add metadata to a PDF file attached to a Zotero
     item. This script requires the [PyPDF2](https://pythonhosted.org/PyPDF2/)
     module.
-  - ``create_missing_attachments`` (sandbox):creates linked attachments to
+  - ``create_missing_attachments`` (sandbox): creates linked attachments to
     parent items.
+  - ``create_missing_call_numbers``: creates call numbers for all top-level
+    items contained in the collection ``no_call_number`` (user-created).
 
 ## The ``pyzottk.cfg`` config file
 
