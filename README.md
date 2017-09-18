@@ -29,8 +29,9 @@ operations here.
     module.
   - ``create_missing_attachments`` (sandbox): creates linked attachments to
     parent items.
-  - ``create_missing_call_numbers``: creates call numbers for all top-level
-    items contained in the collection ``no_call_number`` (user-created).
+  - ``create_missing_call_numbers`` (sandbox): creates call numbers for all
+    top-level items contained in the (user-created) collection
+    ``no_call_number``.
 
 ## The ``pyzottk.cfg`` config file
 
