@@ -32,6 +32,8 @@ operations here.
   - ``create_missing_call_numbers`` (sandbox): creates call numbers for all
     top-level items contained in the (user-created) collection
     ``no_call_number``.
+  - ``rename_attachments`` (sandbox): renames attachments according to a
+    consistent scheme.
 
 ## The ``pyzottk.cfg`` config file
 
