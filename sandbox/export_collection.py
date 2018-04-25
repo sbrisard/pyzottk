@@ -11,7 +11,7 @@ if __name__ == '__main__':
     params = {'v': 3, 'key': cfg['credentials']['key'], 'format': 'json'}
     proxies = dict(cfg['proxies'])
 
-    collection_name = 'Emacs2'
+    collection_name = 'Emacs'
 
     # Find key of exported collection
     url = '/'.join([user_prefix, 'collections'])
@@ -25,4 +25,18 @@ if __name__ == '__main__':
     else:
         raise RuntimeError()
 
-    print(collection_key)
+    # List items in collection
+    url = '/'.join([user_prefix, 'collections', collection_key, 'items/top'])
+    items = requests.get(url=url, params=params, proxies=proxies)
+    for i in items.json:
+        title = i['data']['title']
+        author = ', '.join(c['firstName']+' '+c['lastName']
+                           for c in i['data']['creators'])
+        if i['meta']['numChildren'] >= 1:
+            url = '/'.join([user_prefix, 'items', i['key'], 'children'])
+            children = requests.get(url=url, params=params, proxies=proxies)
+            for c in children.json():
+                if (c['data']['itemType'] == 'attachment'
+                    and c['data']['contentType'] == 'application/pdf'):
+                    path = c['data']['path'] 
+                    print(author+', '+title+', '+path)
