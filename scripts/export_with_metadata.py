@@ -21,13 +21,13 @@ called prefs.js). In case of failure, it is possible to specify the
 relevent preferences from the command line (see the --data and --base
 options).
 """
-import glob
 import os.path
-import re
 import sqlite3
 import sys
 
 import PyPDF2
+
+import pyzottk
 
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
@@ -58,44 +58,6 @@ WITH_METADATA = '-with_metadata'
 # Preference keys (to be found in the prefs.js file)
 BASE_ATTACHMENT_PATH_KEY = 'extensions.zotero.baseAttachmentPath'
 DATA_DIR_KEY = 'extensions.zotero.dataDir'
-
-
-def simple_menu(entries, msg=None):
-    """Display a list of choices and prompt for the user's selection.
-
-    This function loops indefinitely, until a valid selection is
-    entered.
-
-    Args:
-        entries: An iterable of entries that can be selected.
-        msg: The prompt message.
-
-    Returns:
-        The index of the user's selection.
-
-    Raises:
-        ValueError: entries is an iterator, while a container was
-            expected.
-    """
-    if iter(entries) is iter(entries):
-        raise ValueError('entries should be a container, not an iterator')
-    entries = list(entries)
-    num_entries = len(entries)
-    num_digits = len(str(num_entries-1))
-    for index, entry in enumerate(entries):
-        index_str = '[{0}]'.format(index).rjust(num_digits+2)
-        print(index_str+' '+entry)
-
-    err_msg = 'Selection n must be such that: 0 <= n < {}!'.format(num_entries)
-    while True:
-        try:
-            selection = int(input(msg or ''))
-            if selection >= 0 and selection < len(entries):
-                break
-        except ValueError:
-            pass
-        print(err_msg)
-    return selection
 
 
 def get_field_ID(field_name, cursor):
@@ -200,7 +162,7 @@ def select_attachment(pattern, cursor):
         return attachments[0]
     else:
         print('Found several attachments that match the specified pattern:')
-        selection = simple_menu([path for _, path in attachments])
+        selection = pyzottk.simple_menu([path for _, path in attachments])
         return attachments[selection]
 
 
@@ -231,50 +193,6 @@ def setup_argument_parser():
     return parser
 
 
-def locate_zotero_prefs():
-    """Return a list of ``prefs.js`` preference files.
-
-    The profile directories are located according to the
-    "Profile directory location"
-    (https://www.zotero.org/support/kb/profile_directory) section in the
-    Zotero documentation.
-    """
-    home = os.path.expanduser('~')
-    if sys.platform.startswith('darwin'):
-        paths = [home, 'Library', 'Application Support', 'Zotero', 'Profiles']
-    elif sys.platform.startswith('win32'):
-        paths = [os.environ['APPDATA'], 'Zotero', 'Zotero', 'Profiles']
-    elif sys.platform.startswith('linux'):
-        paths = [home, '.zotero', 'Profiles']
-    paths += ['*', 'prefs.js']
-    return glob.glob(os.path.join(*paths))
-
-
-def select_zotero_prefs():
-    """Prompt the user for the ``prefs.js`` preferences file to be used.
-
-    If only one candidate is found, it is returned without any
-    interaction with the user.
-
-    Returns:
-        The path to the ``prefs.js`` preferences file, None if no Zotero
-        profiles were found.
-    """
-    candidates = locate_zotero_prefs()
-    if len(candidates) == 0:
-        return None
-    elif len(candidates) > 1:
-        prefix = os.path.commonpath(candidates)
-        entries = ['$PROFILES'+c[len(prefix):] for c in candidates]
-        print('Please select the Zotero preferences file:')
-        print('($PROFILES = standard Zotero path to profiles):')
-        print('')
-        index = simple_menu(entries)
-        return candidates[index]
-    else:
-        return candidates[0]
-
-
 def sqlite_ro_connection(path):
     """Return a read-only connection to the SQLite database, if possible.
 
@@ -293,24 +211,6 @@ def sqlite_ro_connection(path):
         return sqlite3.connect('file:'+path+'?mode=ro', uri=True)
     else:
         return sqlite3.connect(path)
-
-
-def parse_zotero_prefs(path):
-    """Return the Zotero preferences in a dictionary
-
-    Args:
-        path: The path to the prefs.js preferences file.
-
-    Returns:
-        A dictionary of preferences.
-    """
-    prog = re.compile('^user_pref\("([a-zA-Z.]*)"\s*,\s*(.*)\);$')
-    with open(path, 'r') as f:
-        lines = (bytes(line, 'utf-8').decode('unicode_escape') for line in f)
-        matches = (prog.match(line) for line in lines)
-        prefs = {match.group(1): match.group(2).strip('"\'')
-                 for match in matches if match}
-        return prefs
 
 
 def attachment_absolute_path(path, base_attachment_path):
@@ -367,9 +267,9 @@ if __name__ == '__main__':
     if args.data:
         database_path = args.data
     else:
-        path = select_zotero_prefs()
+        path = pyzottk.prefs.select()
         if path:
-            prefs = parse_zotero_prefs(select_zotero_prefs())
+            prefs = pyzottk.prefs.parse(path)
             database_path = os.path.join(prefs[DATA_DIR_KEY], 'zotero.sqlite')
         else:
             raise RuntimeError('could not locate Zotero preferences')
