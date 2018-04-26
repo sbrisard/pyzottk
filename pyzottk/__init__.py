@@ -1,5 +1,6 @@
 """pyzottk is a module that allows interaction with Zotero libraries.
 """
+import pyzottk.attachment
 import pyzottk.prefs
 
 
