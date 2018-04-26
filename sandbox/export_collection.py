@@ -2,9 +2,21 @@ import configparser
 
 import requests
 
+import pyzottk
+
 BASE_URL = 'https://api.zotero.org'
 
+BASE_ATTACHMENT_PATH_KEY = 'extensions.zotero.baseAttachmentPath'
+
+
 if __name__ == '__main__':
+    path = pyzottk.prefs.select()
+    if path:
+        prefs = pyzottk.prefs.parse(path)
+        print(prefs[BASE_ATTACHMENT_PATH_KEY])
+    else:
+        raise RuntimeError('could not locate Zotero preferences')
+
     cfg = configparser.ConfigParser()
     cfg.read('pyzottk.cfg')
     user_prefix = '/'.join([BASE_URL, 'users', cfg['credentials']['user_id']])
