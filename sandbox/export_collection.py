@@ -28,7 +28,7 @@ if __name__ == '__main__':
     # List items in collection
     url = '/'.join([user_prefix, 'collections', collection_key, 'items/top'])
     items = requests.get(url=url, params=params, proxies=proxies)
-    for i in items.json:
+    for i in items.json():
         title = i['data']['title']
         author = ', '.join(c['firstName']+' '+c['lastName']
                            for c in i['data']['creators'])
