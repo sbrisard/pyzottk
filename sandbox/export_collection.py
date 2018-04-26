@@ -38,5 +38,5 @@ if __name__ == '__main__':
             for c in children.json():
                 if (c['data']['itemType'] == 'attachment'
                     and c['data']['contentType'] == 'application/pdf'):
-                    path = c['data']['path'] 
+                    path = c['data']['path']
                     print(author+', '+title+', '+path)
