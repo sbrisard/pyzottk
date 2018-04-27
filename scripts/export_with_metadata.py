@@ -25,8 +25,6 @@ import os.path
 import sqlite3
 import sys
 
-import PyPDF2
-
 import pyzottk
 
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
@@ -165,23 +163,6 @@ def select_attachment(pattern, cursor):
         return attachments[selection]
 
 
-def add_metadata(istream, ostream, author, title):
-    """Add author and title metadata to PDF file.
-
-    Args:
-        istream: the input PDF (string or stream in 'rb' mode)
-        ostream: the output PDF (string or stream in 'wb' mode)
-        author: the '/Author' metadata (string)
-        title: the '/Title' metadata (string)
-    """
-    reader = PyPDF2.PdfFileReader(istream)
-    writer = PyPDF2.PdfFileWriter()
-    writer.appendPagesFromReader(reader)
-    writer.addMetadata({'/Author': author,
-                        '/Title': title})
-    writer.write(ostream)
-
-
 def setup_argument_parser():
     parser = ArgumentParser(description=__doc__,
                             formatter_class=RawDescriptionHelpFormatter)
@@ -259,9 +240,9 @@ if __name__ == '__main__':
     fieldID = get_field_ID('title', cursor)
 
     with open(iname, 'rb') as istream, open(oname, 'wb') as ostream:
-        add_metadata(istream, ostream,
-                     get_authors(parentItemID, cursor),
-                     get_title(parentItemID, cursor, fieldID))
+        pyzottk.pdf.add_metadata(istream, ostream,
+                                 get_authors(parentItemID, cursor),
+                                 get_title(parentItemID, cursor, fieldID))
 
     connection.close()
 
