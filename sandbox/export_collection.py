@@ -42,7 +42,7 @@ def setup_argument_parser():
     parser = ArgumentParser(description=__doc__,
                             formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument('collection', help=COLLECTION_HELP)
-    parser.add_argument('export_path', help=EXPORT_PATH_HELP)
+    parser.add_argument('-o', '--output', default='.', help=EXPORT_PATH_HELP)
     return parser
 
 
@@ -87,7 +87,6 @@ if __name__ == '__main__':
                 if is_attachment and is_pdf:
                     iname = full_path(data['path'],
                                       cfg['local']['base_attachment_path'])
-                    oname = os.path.join(args.export_path,
-                                         os.path.basename(iname))
+                    oname = os.path.join(args.output, os.path.basename(iname))
                     with open(iname, 'rb') as fi, open(oname, 'wb') as fo:
                         add_metadata(fi, fo, author, title)
