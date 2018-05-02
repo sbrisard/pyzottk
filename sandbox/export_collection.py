@@ -25,6 +25,7 @@ COLLECTION_HELP = 'The name of the collection to be exported.'
 
 EXPORT_PATH_HELP = 'The path to the directory in which the files are to be exported.'
 
+
 def config_file_path():
     """Return the default path to the config file."""
     home = os.path.expanduser('~')
