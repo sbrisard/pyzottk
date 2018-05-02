@@ -1,3 +1,11 @@
+"""Export PDF files attached to the items of a Zotero collection.
+
+This script takes the name of a Zotero collection as an input. It then
+lists all the items in this collection. For each of these items, it
+retrieves the attached PDF file, and exports it to the specified
+destination. The metadata (author and title) of the exported PDF file
+are updated according to the item data.
+"""
 import configparser
 import os.path
 
