@@ -7,23 +7,50 @@ destination. The metadata (author and title) of the exported PDF file
 are updated according to the item data.
 """
 import configparser
-import os.path
+import os
+import sys
 
 import requests
 
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
+
+from pyzottk.attachment import full_path
 from pyzottk.pdf import add_metadata
 
 BASE_URL = 'https://api.zotero.org'
 
 BASE_ATTACHMENT_PATH_KEY = 'extensions.zotero.baseAttachmentPath'
 
+COLLECTION_HELP = 'The name of the collection to be exported.'
+
+EXPORT_PATH_HELP = 'The path to the directory in which the files are to be exported.'
+
+def config_file_path():
+    """Return the default path to the config file."""
+    home = os.path.expanduser('~')
+    if sys.platform.startswith('darwin'):
+        paths = [home, 'Library', 'Application Support', 'pyzottk']
+    elif sys.platform.startswith('win32'):
+        paths = [os.environ['APPDATA'], 'pyzottk']
+    elif sys.platform.startswith('linux'):
+        paths = [home, '.pyzottk']
+    paths += ['pyzottk.cfg']
+    return os.path.join(*paths)
+
+
+def setup_argument_parser():
+    parser = ArgumentParser(description=__doc__,
+                            formatter_class=RawDescriptionHelpFormatter)
+    parser.add_argument('collection', help=COLLECTION_HELP)
+    parser.add_argument('export_path', help=EXPORT_PATH_HELP)
+    return parser
+
 
 if __name__ == '__main__':
-    collection_name = 'Emacs'
-    export_path = '.'
+    args = setup_argument_parser().parse_args()
 
     cfg = configparser.ConfigParser()
-    cfg.read('pyzottk.cfg')
+    cfg.read(config_file_path())
     user_prefix = '/'.join([BASE_URL, 'users', cfg['credentials']['user_id']])
     params = {'v': 3, 'key': cfg['credentials']['key'], 'format': 'json'}
     proxies = dict(cfg['proxies'])
@@ -34,7 +61,7 @@ if __name__ == '__main__':
     collection_key = None
     for item in r.json():
         data = item['data']
-        if data['name'] == collection_name:
+        if data['name'] == args.collection:
             collection_key = data['key']
             break
     else:
@@ -60,6 +87,7 @@ if __name__ == '__main__':
                 if is_attachment and is_pdf:
                     iname = full_path(data['path'],
                                       cfg['local']['base_attachment_path'])
-                    oname = os.path.join(export_path, os.path.basename(iname))
+                    oname = os.path.join(args.export_path,
+                                         os.path.basename(iname))
                     with open(iname, 'rb') as fi, open(oname, 'wb') as fo:
                         add_metadata(fi, fo, author, title)
