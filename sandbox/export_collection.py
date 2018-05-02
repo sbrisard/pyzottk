@@ -65,7 +65,7 @@ if __name__ == '__main__':
             collection_key = data['key']
             break
     else:
-        raise RuntimeError()
+        raise RuntimeError('Could not find collection: {}'.format(args.collection))
 
     # List items in collection
     url = '/'.join([user_prefix, 'collections', collection_key, 'items/top'])
