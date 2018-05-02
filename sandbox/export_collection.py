@@ -78,6 +78,7 @@ if __name__ == '__main__':
         title = data['title']
         author = ', '.join(creator['firstName']+' '+creator['lastName']
                            for creator in data['creators'])
+        print('Exporting "{}" ({})'.format(title, author))
         if item['meta']['numChildren'] >= 1:
             url = '/'.join([user_prefix, 'items', item['key'], 'children'])
             children = requests.get(url=url, params=params, proxies=proxies)
