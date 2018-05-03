@@ -85,12 +85,14 @@ if __name__ == '__main__':
     items = requests.get(url=url, params=params, proxies=proxies)
 
     # Export items
-    for item in items.json():
+    items = list(items.json())
+    for i, item in enumerate(items):
         data = item['data']
         title = data['title']
         author = ', '.join(creator['firstName']+' '+creator['lastName']
                            for creator in data['creators'])
-        print('Exporting "{}" ({})'.format(title, author))
+        print('[{}/{}] Exporting "{}" ({})'.format(i+1, len(items),
+                                                   title, author))
         if item['meta']['numChildren'] >= 1:
             url = '/'.join([user_prefix, 'items', item['key'], 'children'])
             children = requests.get(url=url, params=params, proxies=proxies)
