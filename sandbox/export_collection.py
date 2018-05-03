@@ -21,9 +21,9 @@ BASE_URL = 'https://api.zotero.org'
 
 BASE_ATTACHMENT_PATH_KEY = 'extensions.zotero.baseAttachmentPath'
 
-COLLECTION_HELP = 'The name of the collection to be exported.'
+COLLECTION_HELP = 'name of collection to export'
 
-EXPORT_PATH_HELP = 'The path to the directory in which the files are to be exported.'
+EXPORT_PATH_HELP = 'full path to export directory'
 
 
 def config_file_path():
