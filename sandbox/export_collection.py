@@ -26,8 +26,11 @@ COLLECTION_HELP = 'name of collection to export'
 EXPORT_PATH_HELP = 'full path to export directory'
 
 
-def config_file_path():
-    """Return the default path to the config file."""
+def parse_config():
+    """Return the contents of the pyzottk configuration file.
+
+    This function returns an instance of ``configparser.ConfigParser``.
+    """
     home = os.path.expanduser('~')
     if sys.platform.startswith('darwin'):
         paths = [home, 'Library', 'Application Support', 'pyzottk']
@@ -36,7 +39,12 @@ def config_file_path():
     elif sys.platform.startswith('linux'):
         paths = [home, '.pyzottk']
     paths += ['pyzottk.cfg']
-    return os.path.join(*paths)
+    path = os.path.join(*paths)
+    if not(os.path.isfile(path)):
+        raise RuntimeError('could not find config file: '+path)
+    cfg = configparser.ConfigParser()
+    cfg.read(os.path.join(*paths))
+    return cfg
 
 
 def setup_argument_parser():
@@ -50,8 +58,7 @@ def setup_argument_parser():
 if __name__ == '__main__':
     args = setup_argument_parser().parse_args()
 
-    cfg = configparser.ConfigParser()
-    cfg.read(config_file_path())
+    cfg = parse_config()
     user_prefix = '/'.join([BASE_URL, 'users', cfg['credentials']['user_id']])
     params = {'v': 3, 'key': cfg['credentials']['key'], 'format': 'json'}
     proxies = dict(cfg['proxies'])
