@@ -51,7 +51,7 @@ def setup_argument_parser():
     parser = ArgumentParser(description=__doc__,
                             formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument('collection', help=COLLECTION_HELP)
-    parser.add_argument('-o', '--output', default='.', help=EXPORT_PATH_HELP)
+    parser.add_argument('-o', '--output', help=EXPORT_PATH_HELP)
     return parser
 
 
@@ -74,6 +74,11 @@ if __name__ == '__main__':
             break
     else:
         raise RuntimeError('could not find collection: '+args.collection)
+
+    if args.output is None:
+        args.output = os.path.join('.', args.collection)
+        if not os.path.isdir(args.output):
+            os.mkdir(args.output)
 
     # List items in collection
     url = '/'.join([user_prefix, 'collections', collection_key, 'items/top'])
