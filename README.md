@@ -6,10 +6,10 @@ library.
 The project is organized as follows
 
   - ``scripts/``: this folder gathers scripts that have been cleaned-up and are
-                  reusable,
+    reusable,
   - ``sandbox/``: this folder gathers scripts/Jupyter notebooks that are not
-                  really usable as such, but that I might use as later basis for
-                  scripts.
+    really usable as such, but that I might use as later basis for scripts.
+  - ``deprecated/``: this folder gathers scripts that should no longer be used.
 
 Ultimately, some code will probably be factored out of the scripts into modules.
 
@@ -27,7 +27,8 @@ operations here.
   - ``export_collection``: create a copy of all PDF files attached to the items of
     the specified Zotero collection. Embed metadata (author and title) into each
     exported PDF. This script requires the
-    [PyPDF2](https://pythonhosted.org/PyPDF2/) module.
+    [Requests](http://docs.python-requests.org/) and
+    [PyPDF2](https://pythonhosted.org/PyPDF2/) modules.
   - ``export_with_metadata``: add metadata to a PDF file attached to a Zotero
     item. This script requires the [PyPDF2](https://pythonhosted.org/PyPDF2/)
     module. **As of 2018-05-04, this script is deprecated, as direct access to the
