@@ -58,3 +58,14 @@ The ``pyzottk.cfg`` config file must be structured as follows:
     [proxies]
     http =
     https =
+
+### Update (2018-05-04)
+
+The ``pyzottk.cfg`` config file is also used by the script
+``export_collection.py``. The structure of the file is unchanged. However, its
+location is now standardized:
+
+  - Mac: ``/Users/<username>/Library/Application Support/pyzottk/pyzottk.cfg``
+  - Windows 10/8/7/Vista: ``C:\Users\<User Name>\AppData\Roaming\pyzottk\pyzottk.cfg``
+  - Windows XP/2000: ``C:\Documents and Settings\<username>\Application Data\pyzottk\pyzottk.cfg``
+  - Linux: ``~/.pyzottk/pyzottk.cfg``
