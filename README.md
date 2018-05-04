@@ -24,9 +24,14 @@ operations here.
 
 ## List of available scripts
 
+  - ``export_collection``: create a copy of all PDF files attached to the items of
+    the specified Zotero collection. Embed metadata (author and title) into each
+    exported PDF. This script requires the
+    [PyPDF2](https://pythonhosted.org/PyPDF2/) module.
   - ``export_with_metadata``: add metadata to a PDF file attached to a Zotero
     item. This script requires the [PyPDF2](https://pythonhosted.org/PyPDF2/)
-    module.
+    module. **As of 2018-05-04, this script is deprecated, as direct access to the
+    sqlite database is not the recommended way to interact with Zotero.**
   - ``create_missing_attachments`` (sandbox): creates linked attachments to
     parent items.
   - ``create_missing_call_numbers`` (sandbox): creates call numbers for all
