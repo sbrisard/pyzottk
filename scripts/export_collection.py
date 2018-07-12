@@ -107,7 +107,7 @@ if __name__ == '__main__':
             for child in children.json():
                 data = child['data']
                 is_attachment = data['itemType'] == 'attachment'
-                is_pdf = data['contentType'] == 'application/pdf'
+                is_pdf = data.get('contentType', '') == 'application/pdf'
                 if is_attachment and is_pdf:
                     iname = full_path(data['path'],
                                       cfg['local']['base_attachment_path'])
