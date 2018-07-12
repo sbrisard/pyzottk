@@ -55,6 +55,13 @@ def setup_argument_parser():
     return parser
 
 
+def full_name(first_name, last_name):
+    out = first_name
+    if out != '' and last_name != '':
+        out += ' '
+    out += last_name
+    return out
+
 if __name__ == '__main__':
     args = setup_argument_parser().parse_args()
 
@@ -89,7 +96,8 @@ if __name__ == '__main__':
     for i, item in enumerate(items):
         data = item['data']
         title = data['title']
-        author = ', '.join(creator['firstName']+' '+creator['lastName']
+        author = ', '.join(full_name(creator.get('firstName', ''),
+                                     creator.get('lastName', ''))
                            for creator in data['creators'])
         print('[{}/{}] Exporting "{}" ({})'.format(i+1, len(items),
                                                    title, author))
