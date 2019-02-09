@@ -129,6 +129,7 @@ if __name__ == '__main__':
         if len(new_items) < ITEMS_PER_REQUEST:
             break
 
+    params['start'] = 0
     for i, item in enumerate(items):
         data = item['data']
         title = data['title']
